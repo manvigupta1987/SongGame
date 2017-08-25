@@ -21,9 +21,11 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -254,6 +256,8 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
 
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
+
+            setVolumeControlStream(AudioManager.STREAM_MUSIC);
         }
     }
 
@@ -294,6 +298,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    //MediaStyle notification that can act as an external client for controlling the Media Session, and therefore the media playback.
     private void showNotification(PlaybackStateCompat playerState){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
@@ -373,6 +378,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onPlay() {
             mExoPlayer.setPlayWhenReady(true);
+            registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
         }
 
         @Override
@@ -384,6 +390,12 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         public void onSkipToPrevious() {
             mExoPlayer.seekTo(0);
         }
+
+        @Override
+        public void onStop() {
+            super.onStop();
+            unregisterReceiver(myNoisyAudioStreamReceiver);
+        }
     }
 
     public static class MediaReceiver extends BroadcastReceiver{
@@ -392,6 +404,23 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             MediaButtonReceiver.handleIntent(mMediaSession, intent);
+        }
+    }
+
+    //When a headset is unplugged or a Bluetooth device disconnected, the audio stream automatically
+    // reroutes to the built-in speaker. If you listen to music at a high volume, this can be a noisy surprise.
+    //So, when headset is unplugged, System broadcasts the  ACTION_AUDIO_BECOMING_NOISY intent. When this intent
+    //is received, you can pause the music.
+    private IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+    private BecomingNoisyReceiver myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
+
+    private class BecomingNoisyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                // Pause the playback
+                mExoPlayer.setPlayWhenReady(false);
+            }
         }
     }
 }
