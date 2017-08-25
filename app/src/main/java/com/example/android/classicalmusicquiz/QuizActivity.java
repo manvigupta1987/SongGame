@@ -181,6 +181,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                mExoPlayer.stop();
                 Intent nextQuestionIntent = new Intent(QuizActivity.this, QuizActivity.class);
                 nextQuestionIntent.putExtra(REMAINING_SONGS_KEY, mRemainingSampleIDs);
                 finish();
@@ -193,12 +194,12 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
      * Disables the buttons and changes the background colors to show the correct answer.
      */
     private void showCorrectAnswer() {
+        //Set the correct answer picture in player view when user clicks on a button,
+        mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(this,mAnswerSampleID));
         for (int i = 0; i < mQuestionSampleIDs.size(); i++) {
             int buttonSampleID = mQuestionSampleIDs.get(i);
             mButtons[i].setEnabled(false);
 
-            //Set the correct answer picture in player view when user clicks on a button,
-            mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(this,mAnswerSampleID));
             if (buttonSampleID == mAnswerSampleID) {
                 mButtons[i].getBackground().setColorFilter(ContextCompat.getColor
                                 (this, android.R.color.holo_green_light),
