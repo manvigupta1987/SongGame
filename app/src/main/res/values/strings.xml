@@ -12,7 +12,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.-->
 <resources>
-    <string name="app_name">Guess the Composer!</string>
+    <string name="app_name">ClassicalMusicQuiz!</string>
     <string name="new_game">New Game</string>
     <string name="high_score">High Score: %1$d / %2$d</string>
     <string name="preference_file_key">Score Preferences</string>
@@ -21,4 +21,5 @@
     <string name="guess">Can you guess the composer?</string>
     <string name="notification_text">Press play to hear the piece!</string>
     <string name="sample_list_load_error">Error loading one or more samples!</string>
+    <string name="sample_not_found">Sample not found</string>
 </resources>

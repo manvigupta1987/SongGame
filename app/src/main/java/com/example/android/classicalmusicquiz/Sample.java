@@ -181,7 +181,7 @@ class Sample {
                     .show();
         }
 
-        String userAgent = Util.getUserAgent(context, "ClassicalMusicQuiz");
+        String userAgent = Util.getUserAgent(context, context.getString(R.string.app_name));
         DataSource dataSource = new DefaultDataSource(context, null, userAgent, false);
         DataSpec dataSpec = new DataSpec(Uri.parse(uri));
         InputStream inputStream = new DataSourceInputStream(dataSource, dataSpec);
