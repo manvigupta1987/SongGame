@@ -274,6 +274,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         releasePlayer();
         mMediaSession.setActive(false);
+        unregisterReceiver(myNoisyAudioStreamReceiver);
     }
 
     private void initializeMediaSession(){
@@ -292,6 +293,9 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
                                         PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
                                         PlaybackStateCompat.ACTION_PLAY_PAUSE);
 
+        mMediaSession.setPlaybackState(mStateBuilder.build());
+
+        // MySessionCallback has methods that handle callbacks from a media controller.
         mMediaSession.setCallback(new MySessionCallBack());
         // Start the Media Session since the activity is active.
         mMediaSession.setActive(true);
